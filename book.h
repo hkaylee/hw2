@@ -5,6 +5,7 @@
 #include <set>
 #include <vector>
 #include <algorithm>
+#include "product.h"
 
 /**
  * derived product class book implementing the keywords() which return keywords 
@@ -15,42 +16,29 @@
 
 class Book : public Product{
 public:
-    Book(const std::string category, const std::string name, double price, int qty);
-    virtual ~Book();
+    // constructor
+    Book(const std::string category, const std::string name, double price, int qty, const std::string isbn, const std::string author);
+    // destructor
+    ~Book();
 
     /**
      * Returns the appropriate keywords that this Book should be associated with
      */
-    virtual std::set<std::string> keywords() const = 0;
-
-    /**
-     * Allows for a more detailed search beyond simple keywords
-     */
-    virtual bool isMatch(std::vector<std::string>& searchTerms) const;
+    std::set<std::string> keywords() const override;
 
     /**
      * Returns a string to display the Book info for hits of the search
      */
-    virtual std::string displayString() const = 0;
+    std::string displayString() const override;
 
     /**
      * Outputs the Book info in the database format
      */
-    virtual void dump(std::ostream& os) const;
+    void dump(std::ostream& os) const override;
 
-    /**
-     * Accessors and mutators
-     */
-    double getPrice() const;
-    std::string getName() const;
-    int getQty() const;
-    void subtractQty(int num);
-
-protected:
-    std::string name_;
-    double price_;
-    int qty_;
-    std::string category_;
+private:
+    std::string isbn_;
+    std::string author_;
 
 };
 #endif

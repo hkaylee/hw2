@@ -5,52 +5,40 @@
 #include <set>
 #include <vector>
 #include <algorithm>
+#include "product.h"
 
 /**
- * derived product class clothing implementing the keywords() which return keywords 
+ * derived product class Clothing implementing the keywords() which return keywords 
  * displayString() creates string that contains Product info 
  * dump()- outputs database format of Product info 
- * clothing: size, brand 
+ * Clothing: size, brand
  */
 
-class Book : public Product{
+class Clothing : public Product{
 public:
-    Book(const std::string category, const std::string name, double price, int qty);
-    virtual ~Book();
+    // constructor
+    Clothing(const std::string category, const std::string name, double price, int qty, const std::string size, const std::string brand);
+    // destructor
+    ~Clothing();
 
     /**
-     * Returns the appropriate keywords that this Book should be associated with
+     * Returns the appropriate keywords that this Clothing should be associated with
      */
-    virtual std::set<std::string> keywords() const = 0;
+    std::set<std::string> keywords() const override;
 
     /**
-     * Allows for a more detailed search beyond simple keywords
+     * Returns a string to display the Clothing info for hits of the search
      */
-    virtual bool isMatch(std::vector<std::string>& searchTerms) const;
+    std::string displayString() const override;
 
     /**
-     * Returns a string to display the Book info for hits of the search
+     * Outputs the Clothing info in the database format
      */
-    virtual std::string displayString() const = 0;
+    void dump(std::ostream& os) const override;
 
-    /**
-     * Outputs the Book info in the database format
-     */
-    virtual void dump(std::ostream& os) const;
-
-    /**
-     * Accessors and mutators
-     */
-    double getPrice() const;
-    std::string getName() const;
-    int getQty() const;
-    void subtractQty(int num);
-
-protected:
-    std::string name_;
-    double price_;
-    int qty_;
-    std::string category_;
+private:
+    std::string size_;
+    std::string brand_;
 
 };
 #endif
