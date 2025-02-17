@@ -3,7 +3,6 @@
 #include "book.h"
 #include "util.h"
 
-using namespace std;
 
 Book::Book(const std::string category, const std::string name, double price, int qty, const std::string isbn, const std::string author) :
     Product::Product(category, name, price, qty), 
