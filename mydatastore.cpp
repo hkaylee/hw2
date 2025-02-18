@@ -84,16 +84,18 @@ std::vector<Product*> MyDataStore::search(std::vector<std::string>& terms, int t
 }
 
 void MyDataStore::addToCart(std::string username, int hit_result_index){
+    
     bool userFound = false; 
+
     // Find user in users_
     for (std::set<User*>::iterator uit = users_.begin(); uit != users_.end(); ++uit) {
         if ((*uit)->getName() == username) {
-            userFound = true; 
+            userFound = true;  
             break; 
-        } 
+        }
     }
 
-    if(userFound == false ){
+    if (userFound == false) {
         std::cout << "Invalid username" << std::endl;
         return; 
     }
@@ -157,18 +159,19 @@ void MyDataStore::buyCart(std::string username) {
     // reduce qty by 1 
     // reduce credit 
     // if qty = 0 || credit <price ++product 
-    bool userFound = false; 
+    User* user = nullptr;
+
     // Find user in users_
     for (std::set<User*>::iterator uit = users_.begin(); uit != users_.end(); ++uit) {
         if ((*uit)->getName() == username) {
-            userFound = true; 
-            break; 
-        } 
+            user = *uit;
+            break;
+        }
     }
 
-    if(userFound == false ){
+    if(user == nullptr){
         std::cout << "Invalid username" << std::endl;
-        return; 
+        return;
     }
 
     // Find the cart for the user
