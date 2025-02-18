@@ -71,6 +71,7 @@ public:
 private:
     std::set<Product*> products_; // set of all products (pointers to product)
     std::set<User*> users_; // set of all users 
+    std::vector<Product*> hits_; 
     std::map<std::string, std::set<Product*>> keywordMap_; // keyword and set of products that match keyword
     std::map<std::string, std::deque<Product*>> cart_; // username and shopping cart for user (FIFO order)
 
