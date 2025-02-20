@@ -155,31 +155,6 @@ void MyDataStore::viewCart(std::string username) const {
 
 }
 
-// void MyDataStore::viewCart(std::string username) const {
-//     std::string caseInsensitiveUser = convToLower(username);
-
-//     // Find user in users_
-//     if (cart_.find(caseInsensitiveUser) == cart_.end()) {
-//         std::cout << "Invalid username"; 
-//         return;
-//     }
-
-//     // Find user's cart
-//     std::map<std::string, std::deque<Product*>>::const_iterator cit = cart_.find(caseInsensitiveUser);
-    
-//     if (cit == cart_.end() || cit->second.empty()) {
-//         std::cout << "Empty Cart"; 
-//         return;
-//     }
-
-//     // Print cart
-//     int index = 1;
-//     for (std::deque<Product*>::const_iterator pit = cit->second.begin(); pit != cit->second.end(); ++pit) {
-//         std::cout << "Item " << index << "\n" << (*pit)->displayString() << std::endl << std::endl;
-//         index++;
-//     }
-// }
-
 
 // buy cart, if item is in stock and enough money, reduce qty and credit. if out of stock or user does not have enough credit, move on to next product 
 void MyDataStore::buyCart(std::string username) {
