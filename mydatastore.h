@@ -68,6 +68,7 @@ public:
      */
     void buyCart(std::string username);
 
+
 private:
     std::set<Product*> products_; // set of all products (pointers to product)
     std::set<User*> users_; // set of all users 

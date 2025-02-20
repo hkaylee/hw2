@@ -43,7 +43,9 @@ std::set<std::string> Book::keywords() const{
      * Returns a string to display the Book info for hits of the search
      */
 std::string Book::displayString() const {
-    std::string s = name_ + "\n" + "Author: " + author_ + " ISBN: " + isbn_ + "\n" + std::to_string(price_) + " " + std::to_string(qty_) + " left.";
+    std::string price = std::to_string(price_);
+    price = price.substr(0, price.find('.') + 3); 
+    std::string s = name_ + "         \n" + "Author: " + author_ + " ISBN: " + isbn_ + "\n" + price + " " + std::to_string(qty_) + " left.";
 
     return s;
  

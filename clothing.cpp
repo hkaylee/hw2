@@ -45,8 +45,12 @@ std::set<std::string> Clothing::keywords() const{
     /**
      * Returns a string to display the Clothing info for hits of the search
      */
+
 std::string Clothing::displayString() const {
-    std::string s = name_ + "\n" + "Size: " + size_ + " Brand: " + brand_ + "\n" + std::to_string(price_) + " " + std::to_string(qty_) + " left.";
+    std::string price = std::to_string(price_);
+    price = price.substr(0, price.find('.') + 3);
+
+    std::string s = name_ + "\n" + "Size: " + size_ + " Brand: " + brand_ + "\n" + price + " " + std::to_string(qty_) + " left.";
 
     return s;
  

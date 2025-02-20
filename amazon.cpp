@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
                 string username;
                 int hit_index;
                 if(ss >> username >> hit_index) {
-                    ds.addToCart(username, hit_index - 1); // hit is 1 indexed 
+                    ds.addToCart(username, hit_index); 
                 } else {
                     cout << "Invalid request" << endl;
                 }

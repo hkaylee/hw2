@@ -30,14 +30,20 @@ void MyDataStore::addProduct(Product *p){
     std::set<std::string> keywords = p->keywords(); // get keywords for product 
 
     for(std::set<std::string>::iterator it = keywords.begin(); it != keywords.end(); ++it){
-        keywordMap_.insert(std::make_pair(*it, std::set<Product*>{p})); // insert to map
+        keywordMap_[convToLower(*it)].insert(p); // insert to map
+
+
     }
+
+    std::cerr << "added product: " << p->getName()<<std::endl;
 }
 
 void MyDataStore::addUser(User *u){
+    std::string caseInsensitiveUser = convToLower(u->getName()); 
     users_.insert(u); 
 
-    cart_.insert(std::make_pair(u->getName(), std::deque<Product*>()));
+    cart_[caseInsensitiveUser] = std::deque<Product*>();
+    std::cerr << "User added: " << caseInsensitiveUser <<std::endl; 
 
 
 }
@@ -52,7 +58,7 @@ std::vector<Product*> MyDataStore::search(std::vector<std::string>& terms, int t
     std::set<Product*> matchingProducts; // store matching products
 
     for (std::vector<std::string>::iterator it = terms.begin(); it != terms.end(); ++it) { // iterate through search terms
-        std::map<std::string, std::set<Product*>>::iterator kit = keywordMap_.find(*it); // find in keyword map
+        std::map<std::string, std::set<Product*>>::iterator kit = keywordMap_.find(convToLower(*it)); // find in keyword map
         
         // missing keywords 
         if (kit == keywordMap_.end()) { // search is not found in the map 
@@ -79,64 +85,60 @@ std::vector<Product*> MyDataStore::search(std::vector<std::string>& terms, int t
         results.push_back(*prodit); 
     }
 
+    std::cerr << "Search results (" << results.size() << "):" << std::endl;
+    for (size_t i = 0; i < results.size(); i++) {
+        std::cerr << i+1 << ": " << results[i]->displayString() << std::endl;
+    }
+
+    hits_.clear(); 
+    hits_ = results; 
+
     return results; // return vector 
 
 }
 
 void MyDataStore::addToCart(std::string username, int hit_result_index){
-    
-    bool userFound = false; 
+    std::string caseInsensitiveUser = convToLower(username); 
 
     // Find user in users_
-    for (std::set<User*>::iterator uit = users_.begin(); uit != users_.end(); ++uit) {
-        if ((*uit)->getName() == username) {
-            userFound = true;  
-            break; 
-        }
+    if(cart_.find(caseInsensitiveUser) == cart_.end()){
+      std::cout << "Invalid request" << std::endl;
+      return; 
     }
 
-    if (userFound == false) {
-        std::cout << "Invalid username" << std::endl;
-        return; 
+    if(hits_.empty() || hit_result_index < 1 || hit_result_index > static_cast<int>(hits_.size())){
+      std::cout << "Invalid request" << std::endl;
+      return; 
     }
+    // for (std::set<User*>::iterator uit = users_.begin(); uit != users_.end(); ++uit) {
+    //     if ((*uit)->getName() == username) {
+    //         userFound = true;  
+    //         break; 
+    //     }
+    // }
 
-    if (hit_result_index < 1 || hit_result_index > static_cast<int>(hits_.size())) { //invalid hit_result provided 
-        std::cout << "Invalid request" << std::endl;
-        return;
-    }
-
-    if(username.empty()){ // no username provided 
-        std::cout << "Invalid username" << std::endl;
-        return; 
-    }
-
-    Product* newProduct = hits_[hit_result_index -1]; // vector 0 indexed
-    cart_[username].push_back(newProduct); // add product to cart 
+    Product* newProduct = hits_[hit_result_index - 1]; // vector 0 indexed
+    cart_[caseInsensitiveUser].push_back(newProduct); // add product to cart 
+    std::cerr << "Added to cart: " <<caseInsensitiveUser << " "<< newProduct->displayString()<< std:: endl; 
 
 
 }
 
 void MyDataStore::viewCart(std::string username) const {
+  std::string caseInsensitiveUser = convToLower(username); 
     if(username.empty()){
         std::cout<< "Invalid username" << std::endl; 
+        return;
     }
     
-    bool userFound = false; 
     // Find user in users_
-    for (std::set<User*>::iterator uit = users_.begin(); uit != users_.end(); ++uit) {
-        if ((*uit)->getName() == username) {
-            userFound = true; 
-            break; 
-        } 
-    }
-
-    if(userFound == false ){
-        std::cout << "Invalid username" << std::endl;
-        return; 
+    if(cart_.find(caseInsensitiveUser) == cart_.end()){
+      std::cout<< "Invalid request" << std::endl; 
+      return; 
     }
 
     // Find the user's cart
-    std::map<std::string, std::deque<Product*>>::const_iterator cit = cart_.find(username);
+    std::map<std::string, std::deque<Product*>>::const_iterator cit = cart_.find(caseInsensitiveUser);
 
     // check if user has a cart or if cart is empty 
     if (cit == cart_.end() || cit->second.empty()) {
@@ -147,7 +149,7 @@ void MyDataStore::viewCart(std::string username) const {
     // Print cart 
     int index = 1;
     for (std::deque<Product*>::const_iterator pit = cit->second.begin(); pit != cit->second.end(); ++pit) {
-        std::cout << index << ":" << (*pit)->displayString() << std::endl;
+        std::cout << "Item " << index << "\n" << (*pit)->displayString() << std::endl << std::endl;
         index++;
     }
 
@@ -159,11 +161,12 @@ void MyDataStore::buyCart(std::string username) {
     // reduce qty by 1 
     // reduce credit 
     // if qty = 0 || credit <price ++product 
+    std::string caseInsensitiveUser = convToLower(username); 
     User* user = nullptr;
 
     // Find user in users_
     for (std::set<User*>::iterator uit = users_.begin(); uit != users_.end(); ++uit) {
-        if ((*uit)->getName() == username) {
+        if (convToLower((*uit)->getName()) == caseInsensitiveUser) {
             user = *uit;
             break;
         }
@@ -175,9 +178,9 @@ void MyDataStore::buyCart(std::string username) {
     }
 
     // Find the cart for the user
-    std::map<std::string, std::deque<Product*>>::iterator cit = cart_.find(username);
+    std::map<std::string, std::deque<Product*>>::iterator cit = cart_.find(caseInsensitiveUser);
     if (cit == cart_.end()) {
-        std::cout << "Invalid username" << std::endl;
+        std::cout << "Invalid request" << std::endl;
         return;
     }
 
@@ -186,6 +189,7 @@ void MyDataStore::buyCart(std::string username) {
 
     while (!cart.empty()) {
         Product* product = cart.front();
+        cart.pop_front();
 
         // no qty and user doesn't have enough money 
         if (product->getQty() == 0 || user->getBalance() < product->getPrice()) {
@@ -193,7 +197,6 @@ void MyDataStore::buyCart(std::string username) {
         } else {
             product->subtractQty(1);  // Reduce product quantity
             user->deductAmount(product->getPrice()); 
-            cart.pop_front(); 
         }
     }
 
